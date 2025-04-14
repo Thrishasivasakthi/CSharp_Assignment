@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Data.SqlClient;
+
+namespace CourierManagementSystem.Util
+{
+    public class DBConnUtil
+    {
+        public static SqlConnection GetConnection(string propFile)
+        {
+            string connStr = DBPropertyUtil.GetConnectionString(propFile);
+            return new SqlConnection(connStr);
+        }
+    }
+}
