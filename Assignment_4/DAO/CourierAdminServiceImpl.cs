@@ -11,11 +11,11 @@ namespace CourierManagementSystem.DAO
 {
     public class CourierAdminServiceImpl : CourierUserServiceImpl, ICourierAdminService
     {
-        public CourierAdminServiceImpl(CourierCompany companyObj) : base(companyObj) { }
+        public CourierAdminServiceImpl(CourierCompanyCollection companyObj) : base(companyObj) { }
 
         public int AddCourierStaff(Employee obj)
         {
-            for (int i = 0; i < companyObj.EmployeeDetails.Length; i++)
+            for (int i = 0; i < companyObj.EmployeeDetails.Count; i++)
             {
                 if (companyObj.EmployeeDetails[i] == null)
                 {

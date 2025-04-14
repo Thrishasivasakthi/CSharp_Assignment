@@ -12,23 +12,24 @@ namespace CourierManagementSystem.Entity
     {
         private static int trackingSeed = 1000;
 
-        public int CourierID { get; set; }
+        public long CourierID { get; set; }
         public string SenderName { get; set; }
         public string SenderAddress { get; set; }
         public string ReceiverName { get; set; }
         public string ReceiverAddress { get; set; }
-        public double Weight { get; set; }
+        public decimal Weight { get; set; }
         public string Status { get; set; }
-        public string TrackingNumber { get; private set; }
-        public DateTime DeliveryDate { get; set; }
-        public int UserId { get; set; }
+        public string TrackingNumber { get;  set; }
+        public DateTime? DeliveryDate { get; set; }
+        public int? UserId { get; set; }
+      
 
         public Courier()
         {
             TrackingNumber = $"TRK{trackingSeed++}";
         }
 
-        public Courier(int courierID, string senderName, string senderAddress, string receiverName, string receiverAddress, double weight, string status, DateTime deliveryDate, int userId)
+        public Courier(int courierID, string senderName, string senderAddress, string receiverName, string receiverAddress, decimal weight, string status, DateTime deliveryDate, int userId)
         {
             CourierID = courierID;
             SenderName = senderName;

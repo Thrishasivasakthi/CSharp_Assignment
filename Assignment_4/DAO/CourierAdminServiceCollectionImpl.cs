@@ -1,30 +1,43 @@
-﻿using CourierManagementSystem.DAO;
+﻿
 using CourierManagementSystem.Entity;
 using CourierManagementSystem.Exception;
 using System;
-namespace CourierManagementSystem.Dao
+namespace CourierManagementSystem.DAO
 {
-    public class CourierAdminServiceCollectionImpl : CourierCompanyCollection, ICourierAdminService
+    public class CourierAdminServiceCollectionImpl : CourierUserServiceImpl, ICourierAdminService
     {
-        // Constructor calling base constructor
+        private readonly CourierServiceDb _dbService; 
+
+   
         public CourierAdminServiceCollectionImpl(CourierCompanyCollection companyObj)
             : base(companyObj)
         {
             CompanyObj = companyObj ?? throw new ArgumentNullException(nameof(companyObj), "Company object cannot be null.");
+            _dbService = new CourierServiceDb();
         }
 
-        // Changed type of CompanyObj to CourierCompanyCollection to fix CS1061
+        
         public CourierCompanyCollection CompanyObj { get; private set; }
 
         public int AddCourierStaff(Employee obj)
         {
-            if (obj == null || obj.EmployeeID <= 0)
+            if (obj == null || string.IsNullOrWhiteSpace(obj.EmployeeName) || obj.EmployeeID <= 0 || string.IsNullOrWhiteSpace(obj.Email) || string.IsNullOrWhiteSpace(obj.Role))
             {
                 throw new InvalidEmployeeIdException("Invalid employee details provided.");
             }
 
-            CompanyObj.EmployeeDetails.Add(obj); // This now works because CompanyObj is of type CourierCompanyCollection
-            return obj.EmployeeID;
+            CompanyObj.EmployeeDetails.Add(obj); 
+            try
+            {
+                _dbService.InsertEmployee(obj); 
+                return obj.EmployeeID; 
+            }
+            catch (System.Exception ex) 
+            {
+                Console.WriteLine($"Error adding employee to database: {ex.Message}");
+                throw;
+            }
+
         }
     }
 }

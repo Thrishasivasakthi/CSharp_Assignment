@@ -13,6 +13,8 @@ namespace CourierManagementSystem.Util
         public static SqlConnection GetConnection(string propFile)
         {
             string connStr = DBPropertyUtil.GetConnectionString(propFile);
+            if (string.IsNullOrEmpty(connStr))
+                throw new InvalidOperationException("Connection string is invalid or empty.");
             return new SqlConnection(connStr);
         }
     }

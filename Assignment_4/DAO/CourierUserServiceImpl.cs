@@ -5,21 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using CourierManagementSystem.Entity;
 using CourierManagementSystem.Exception;
+using CourierManagementSystem.DAO;
 
 namespace CourierManagementSystem.DAO
 {
     public class CourierUserServiceImpl : ICourierUserService
     {
-        protected CourierCompany companyObj;
+        protected CourierCompanyCollection companyObj;
+        private readonly CourierServiceDb _dbService;
 
-        public CourierUserServiceImpl(CourierCompany companyObj)
+        public CourierUserServiceImpl(CourierCompanyCollection companyObj)
         {
-            this.companyObj = companyObj;
+            this.companyObj = companyObj ?? throw new ArgumentNullException(nameof(companyObj));
+            _dbService = new CourierServiceDb();
         }
 
         public string PlaceOrder(Courier courierObj)
         {
-            for (int i = 0; i < companyObj.CourierDetails.Length; i++)
+            for (int i = 0; i < companyObj.CourierDetails.Count; i++)
             {
                 if (companyObj.CourierDetails[i] == null)
                 {
@@ -44,15 +47,32 @@ namespace CourierManagementSystem.DAO
 
         public bool CancelOrder(string trackingNumber)
         {
-            for (int i = 0; i < companyObj.CourierDetails.Length; i++)
+            try
             {
-                if (companyObj.CourierDetails[i] != null && companyObj.CourierDetails[i].TrackingNumber.Equals(trackingNumber))
+                Console.WriteLine($"Attempting to cancel order with TrackingNumber: {trackingNumber}");
+                bool dbSuccess = _dbService.CancelOrderInDb(trackingNumber);
+                Console.WriteLine($"Database update success: {dbSuccess}");
+                if (dbSuccess)
                 {
-                    companyObj.CourierDetails[i].Status = "Cancelled";
+                    
+                    for (int i = 0; i < companyObj.CourierDetails.Count; i++)
+                    {
+                        if (companyObj.CourierDetails[i] != null && companyObj.CourierDetails[i].TrackingNumber.Equals(trackingNumber))
+                        {
+                            companyObj.CourierDetails[i].Status = "Cancelled";
+                            Console.WriteLine($"Updated in-memory status to Cancelled");
+                            break;
+                        }
+                    }
                     return true;
                 }
+                return false;
             }
-            return false;
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"Error in CancelOrder: {ex.Message} | StackTrace: {ex.StackTrace}");
+                return false;
+            }
         }
 
         public List<Courier> GetAssignedOrder(int courierStaffId)
